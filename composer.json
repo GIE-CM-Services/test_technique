@@ -1,0 +1,12 @@
+{
+    "name": "test/cm-php",
+    "description": "Test technique PHP CM Services",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}

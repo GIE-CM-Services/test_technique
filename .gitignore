@@ -1,0 +1,59 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Dependencies
+vendor/
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+error_log
+
+# Cache
+cache/
+*.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.sql
+*.sqlite
+
+# Build files
+dist/
+build/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+
+# PHP specific
+composer.phar
+phpunit.xml
+
+# Docker volumes
+db_data/
+
+# Test results
+coverage/
+.phpunit.result.cache
+
+# Solution files (ne pas inclure les solutions)
+solutions/
+correction/
+*_solution.php
+*_correction.php
