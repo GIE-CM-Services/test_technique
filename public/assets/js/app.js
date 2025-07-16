@@ -69,7 +69,7 @@ async function handleCurrencyConversion(e) {
     };
 
     try {
-        // TODO: Implémenter l'appel API vers /api/convert.php
+        // TODO: Implémenter l'appel API vers /api/convert.php via CurrencyController
         const response = await fetch('/api/convert.php', {
             method: 'POST',
             headers: {
@@ -81,7 +81,8 @@ async function handleCurrencyConversion(e) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Afficher le résultat
+            // Afficher le résultat (adapter selon la structure de réponse du BaseController)
+            const data_result = result.data || result;
             resultDiv.innerHTML = `
                 <h3>Résultat de la conversion</h3>
                 <div class="result-item">
@@ -90,11 +91,11 @@ async function handleCurrencyConversion(e) {
                 </div>
                 <div class="result-item">
                     <strong>Montant converti:</strong>
-                    <span class="highlight">${result.converted_amount} ${data.to_currency}</span>
+                    <span class="highlight">${data_result.converted_amount} ${data.to_currency}</span>
                 </div>
                 <div class="result-item">
                     <strong>Taux de change:</strong>
-                    <span>1 ${data.from_currency} = ${result.exchange_rate} ${data.to_currency}</span>
+                    <span>1 ${data.from_currency} = ${data_result.exchange_rate} ${data.to_currency}</span>
                 </div>
                 <div class="result-item">
                     <strong>Date:</strong>
@@ -135,7 +136,7 @@ async function handleIbanValidation(e) {
     const iban = form.querySelector('#iban-input').value.replace(/\s/g, '');
 
     try {
-        // TODO: Implémenter l'appel API vers /api/iban.php
+        // TODO: Implémenter l'appel API vers /api/iban.php via IbanController
         const response = await fetch('/api/iban.php', {
             method: 'POST',
             headers: {
@@ -147,9 +148,10 @@ async function handleIbanValidation(e) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Afficher le résultat
-            const validClass = result.valid ? 'success' : 'error';
-            const validText = result.valid ? '✓ IBAN valide' : '✗ IBAN invalide';
+            // Afficher le résultat (adapter selon la structure de réponse du BaseController)
+            const data_result = result.data || result;
+            const validClass = data_result.valid ? 'success' : 'error';
+            const validText = data_result.valid ? '✓ IBAN valide' : '✗ IBAN invalide';
 
             resultDiv.innerHTML = `
                 <h3>Résultat de la validation</h3>
@@ -161,18 +163,18 @@ async function handleIbanValidation(e) {
                     <strong>Statut:</strong>
                     <span class="${validClass}">${validText}</span>
                 </div>
-                ${result.bank_data ? `
+                ${data_result.bank_data ? `
                     <div class="result-item">
                         <strong>Banque:</strong>
-                        <span>${result.bank_data.name || 'Non disponible'}</span>
+                        <span>${data_result.bank_data.name || 'Non disponible'}</span>
                     </div>
                     <div class="result-item">
                         <strong>BIC:</strong>
-                        <span>${result.bank_data.bic || 'Non disponible'}</span>
+                        <span>${data_result.bank_data.bic || 'Non disponible'}</span>
                     </div>
                     <div class="result-item">
                         <strong>Pays:</strong>
-                        <span>${result.bank_data.country || 'Non disponible'}</span>
+                        <span>${data_result.bank_data.country || 'Non disponible'}</span>
                     </div>
                 ` : ''}
             `;
@@ -215,7 +217,7 @@ async function handleLoanCalculation(e) {
     };
 
     try {
-        // TODO: Implémenter l'appel API vers /api/loan.php
+        // TODO: Implémenter l'appel API vers /api/loan.php via LoanController
         const response = await fetch('/api/loan.php', {
             method: 'POST',
             headers: {
@@ -227,7 +229,8 @@ async function handleLoanCalculation(e) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Afficher le résultat
+            // Afficher le résultat (adapter selon la structure de réponse du BaseController)
+            const data_result = result.data || result;
             resultDiv.innerHTML = `
                 <h3>Résultat du calcul</h3>
                 <div class="result-item">
@@ -240,19 +243,19 @@ async function handleLoanCalculation(e) {
                 </div>
                 <div class="result-item">
                     <strong>Durée:</strong>
-                    <span>${data.duration} ans (${result.total_months} mois)</span>
+                    <span>${data.duration} ans (${data_result.total_months} mois)</span>
                 </div>
                 <div class="result-item">
                     <strong>Mensualité:</strong>
-                    <span class="highlight">${formatCurrency(result.monthly_payment)}</span>
+                    <span class="highlight">${formatCurrency(data_result.monthly_payment)}</span>
                 </div>
                 <div class="result-item">
                     <strong>Coût total du crédit:</strong>
-                    <span>${formatCurrency(result.total_cost)}</span>
+                    <span>${formatCurrency(data_result.total_cost)}</span>
                 </div>
                 <div class="result-item">
                     <strong>Total des intérêts:</strong>
-                    <span>${formatCurrency(result.total_interest)}</span>
+                    <span>${formatCurrency(data_result.total_interest)}</span>
                 </div>
             `;
             resultDiv.style.display = 'block';
