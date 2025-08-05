@@ -1,3 +1,5 @@
+let lastLoanCalculation = null;
+
 // Gestion des onglets
 document.addEventListener('DOMContentLoaded', () => {
     // Initialisation des onglets
@@ -18,6 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Gestion du mode nuit 
+    const toggleButton = document.getElementById('toggle-dark-mode');
+    const body = document.body;
+    toggleButton.addEventListener('click', function () {
+        body.classList.toggle('dark-mode');
+        const isDark = body.classList.contains('dark-mode');
+        toggleButton.textContent = isDark ? 'Mode clair' : 'Mode sombre';
+    });
+
     // Gestion du formulaire de conversion
     const converterForm = document.getElementById('converter-form');
     if (converterForm) {
@@ -34,6 +45,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const loanForm = document.getElementById('loan-form');
     if (loanForm) {
         loanForm.addEventListener('submit', handleLoanCalculation);
+    }
+
+    // Gestion du bouton Export CSV
+    const exportButton = document.getElementById('export-csv');
+    if (exportButton) {
+        exportButton.addEventListener('click', () => {
+            if (!lastLoanCalculation) return;
+
+            const headers = [
+                'Montant emprunté (€)',
+                'Taux (%)',
+                'Durée (années)',
+                'Durée (mois)',
+                'Mensualité (€)',
+                'Coût total (€)',
+                'Total des intérêts (€)'
+            ];
+
+            const values = [
+                lastLoanCalculation.amount,
+                lastLoanCalculation.rate,
+                lastLoanCalculation.duration,
+                lastLoanCalculation.total_months,
+                lastLoanCalculation.monthly_payment,
+                lastLoanCalculation.total_cost,
+                lastLoanCalculation.total_interest
+            ];
+
+            const csvContent = [
+                headers.join(';'),
+                values.join(';')
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'resultat_calcul_pret.csv';
+            link.click();
+        });
     }
 
     // Format automatique de l'IBAN pendant la saisie
@@ -70,7 +120,7 @@ async function handleCurrencyConversion(e) {
 
     try {
         // TODO: Implémenter l'appel API vers /api/convert.php via CurrencyController
-        const response = await fetch('/api/convert.php', {
+        const response = await fetch('/api/convert', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,11 +141,11 @@ async function handleCurrencyConversion(e) {
                 </div>
                 <div class="result-item">
                     <strong>Montant converti:</strong>
-                    <span class="highlight">${data_result.converted_amount} ${data.to_currency}</span>
+                    <span class="highlight">${Number(data_result.converted_amount).toFixed(2)} ${data.to_currency}</span>
                 </div>
                 <div class="result-item">
                     <strong>Taux de change:</strong>
-                    <span>1 ${data.from_currency} = ${data_result.exchange_rate} ${data.to_currency}</span>
+                    <span>1 ${data.from_currency} = ${Number(data_result.exchange_rate).toFixed(2)} ${data.to_currency}</span>
                 </div>
                 <div class="result-item">
                     <strong>Date:</strong>
@@ -137,7 +187,7 @@ async function handleIbanValidation(e) {
 
     try {
         // TODO: Implémenter l'appel API vers /api/iban.php via IbanController
-        const response = await fetch('/api/iban.php', {
+        const response = await fetch('/api/iban', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -218,7 +268,7 @@ async function handleLoanCalculation(e) {
 
     try {
         // TODO: Implémenter l'appel API vers /api/loan.php via LoanController
-        const response = await fetch('/api/loan.php', {
+        const response = await fetch('/api/loan', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -229,6 +279,7 @@ async function handleLoanCalculation(e) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+
             // Afficher le résultat (adapter selon la structure de réponse du BaseController)
             const data_result = result.data || result;
             resultDiv.innerHTML = `
@@ -260,10 +311,23 @@ async function handleLoanCalculation(e) {
             `;
             resultDiv.style.display = 'block';
             errorDiv.style.display = 'none';
+
+            lastLoanCalculation = {
+                amount: data.amount,
+                rate: data.rate,
+                duration: data.duration,
+                monthly_payment: data_result.monthly_payment,
+                total_months: data_result.total_months,
+                total_cost: data_result.total_cost,
+                total_interest: data_result.total_interest
+            };
+            document.getElementById('export-csv').disabled = false;
         } else {
             throw new Error(result.message || 'Erreur lors du calcul');
         }
     } catch (error) {
+        lastLoanCalculation = null;
+        document.getElementById('export-csv').disabled = true;
         // Afficher l'erreur
         errorDiv.textContent = error.message || 'Une erreur est survenue lors du calcul';
         errorDiv.style.display = 'block';
