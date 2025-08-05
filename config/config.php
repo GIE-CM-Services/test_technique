@@ -35,8 +35,7 @@ define('API_CONFIG', [
             'latest' => 'latest',
             'convert' => 'convert'
         ],
-        // Pas de clé API requise pour ExchangeRates.host
-        'api_key' => null
+        'api_key' => 'abacc0bb8fbf88e03fd75b6e1551bca3'
     ],
     'openiban' => [
         'base_url' => 'https://openiban.com/',

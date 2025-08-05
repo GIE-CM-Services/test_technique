@@ -334,3 +334,45 @@ footer {
     border-radius: 4px;
     font-weight: 600;
 }
+
+body.dark-mode {
+    --primary-color: #0f172a;
+    --secondary-color: #2563eb;
+    --success-color: #22c55e;
+    --error-color: #ef4444;
+    --warning-color: #facc15;
+    --text-color: #f1f5f9;
+    --bg-color: #2b3b5f;
+    --white: #1e293b;
+    --border-color: #5e7aa1;
+}
+
+body.dark-mode {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+body.dark-mode header,
+body.dark-mode footer {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+body.dark-mode form,
+body.dark-mode .result-box,
+body.dark-mode .error-message {
+    background-color: var(--white);
+    color: var(--text-color);
+}
+
+body.dark-mode .tab-button.active::after {
+    background-color: var(--white);
+    color: var(--text-color);
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select {
+    background-color: #1e293b;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}

@@ -1,7 +1,26 @@
 <?php
 session_start();
 require_once '../config/config.php';
+
+// Routing
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+switch ($uri) {
+    case '/api/convert':
+        (new \App\Controllers\CurrencyController())->convert();
+        break;
+    case '/api/iban':
+        (new \App\Controllers\IbanController())->validate();
+        break;
+    case '/api/loan':
+        (new \App\Controllers\LoanController())->calculate();
+        break;
+    default:
+        // Afficher la page d'accueil
+        break;
+}
 ?>
+<!-- Le HTML de l'application commence ici -->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -21,6 +40,10 @@ require_once '../config/config.php';
     </header>
 
     <main class="container">
+        <button id="toggle-dark-mode" class="btn btn-secondary mt-3 mb-2">
+            Mode sombre
+        </button>
+
         <!-- Navigation par onglets -->
         <nav class="tabs">
             <button class="tab-button active" data-tab="converter">
@@ -100,7 +123,7 @@ require_once '../config/config.php';
                         <small>Exemples : FR1420041010050500013M02606, DE89370400440532013000</small>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary mt-2">
                         Valider
                     </button>
                 </form>
@@ -153,6 +176,9 @@ require_once '../config/config.php';
 
                     <button type="submit" class="btn btn-primary">
                         Calculer
+                    </button>
+                    <button type="button" id="export-csv" class="btn btn-secondary ml-3" disabled>
+                        Exporter en CSV
                     </button>
                 </form>
 
